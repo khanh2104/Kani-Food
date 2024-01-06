@@ -24,7 +24,7 @@ class MyApp extends StatelessWidget {
             appBarTheme: AppBarTheme(
           color: Colors.green,
         )),
-        home: HomePage(),
+        home: WelcomePage(),
       ),
     );
   }
