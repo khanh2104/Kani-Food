@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "708144574634",
+    "project_id": "kani-food",
+    "storage_bucket": "kani-food.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:708144574634:android:0d76d1f2a969458488e0d3",
+        "android_client_info": {
+          "package_name": "com.example.flutter_bai_1"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC7-w3Xqi16B1OVFIlF1qdKqAQ3-ZVZh2g"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
