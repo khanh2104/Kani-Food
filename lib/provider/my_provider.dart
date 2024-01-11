@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bai_1/modle/categories_modle.dart';
+import 'package:flutter_bai_1/modle/streetFood_modle.dart';
 
 class MyProvider extends ChangeNotifier {
   //get categories milk tea
@@ -21,6 +22,7 @@ class MyProvider extends ChangeNotifier {
       newMilkteaCategoriesList.add(milkteaCategoriesModle);
       milkteaCategoriesList = newMilkteaCategoriesList;
     });
+     notifyListeners();
   }
 
   get throwMilkteaList {
@@ -45,6 +47,7 @@ class MyProvider extends ChangeNotifier {
       newFruitjuiceCategoriesList.add(fruitjuiceCategoriesModle);
       fruitjuiceCategoriesList = newFruitjuiceCategoriesList;
     });
+     notifyListeners();
   }
 
   get throwFruitjuiceList {
@@ -67,8 +70,9 @@ class MyProvider extends ChangeNotifier {
         name: element.get('name'),
       );
       newStreetfoodCategoriesList.add(streetfoodCategoriesModle);
-     streetfoodCategoriesList = newStreetfoodCategoriesList;
+      streetfoodCategoriesList = newStreetfoodCategoriesList;
     });
+     notifyListeners();
   }
 
   get throwStreetfoodList {
@@ -78,7 +82,7 @@ class MyProvider extends ChangeNotifier {
   // get categories other
   List<CategoriesModle> otherCategoriesList = [];
   late CategoriesModle otherCategoriesModle;
-  Future<void> getOtherCatetjgories() async {
+  Future<void> getOtherCategories() async {
     List<CategoriesModle> newOtherCategoriesList = [];
     QuerySnapshot querySnapshot = await FirebaseFirestore.instance
         .collection('categories')
@@ -93,9 +97,34 @@ class MyProvider extends ChangeNotifier {
       newOtherCategoriesList.add(otherCategoriesModle);
       otherCategoriesList = newOtherCategoriesList;
     });
+     notifyListeners();
   }
 
   get throwOtherList {
     return otherCategoriesList;
+  }
+
+//=================================== Data Single =======================================
+
+// get categories other
+  List<SingleModle> singleList = [];
+  late SingleModle singleModle;
+  Future<void> getSingle() async {
+    List<SingleModle> newSingleList = [];
+    QuerySnapshot querySnapshot =
+        await FirebaseFirestore.instance.collection('foods').get();
+    querySnapshot.docs.forEach((element) {
+      singleModle = SingleModle(
+          image: element.get('image'),
+          name: element.get('name'),
+          price: element.get('price'));
+      newSingleList.add(singleModle);
+      singleList = newSingleList;
+    });
+    notifyListeners();
+  }
+
+  get throwStreetFoodSingleList {
+    return singleList;
   }
 }

@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bai_1/modle/categories_modle.dart';
+import 'package:flutter_bai_1/modle/streetFood_modle.dart';
 import 'package:flutter_bai_1/provider/my_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -15,6 +16,7 @@ class HomePageState extends State<HomePage> {
   List<CategoriesModle> fruitjuiceList = [];
   List<CategoriesModle> otherList = [];
   List<CategoriesModle> streetFoodList = [];
+  List<SingleModle> streetFoodSingleList = [];
   Widget categoriesContainer({
     required String image,
     required String name,
@@ -75,7 +77,7 @@ class HomePageState extends State<HomePage> {
         children: [
           CircleAvatar(
             radius: 60,
-            backgroundImage: AssetImage(image),
+            backgroundImage: NetworkImage(image),
           ),
           ListTile(
             contentPadding: EdgeInsets.symmetric(horizontal: 10.0),
@@ -84,14 +86,13 @@ class HomePageState extends State<HomePage> {
               height: 50,
               child: Text(
                 name,
-                style: TextStyle(fontSize: 20, color: Colors.black,height: 1),
+                style: TextStyle(fontSize: 20, color: Colors.black, height: 1),
               ),
             ),
             trailing: Text(
-              "$price"+"K",
+              "$price" + "K",
               style: TextStyle(fontSize: 18, color: Colors.black),
             ),
-            
           ),
         ],
       ),
@@ -135,18 +136,22 @@ class HomePageState extends State<HomePage> {
     MyProvider provider = Provider.of<MyProvider>(context);
     provider.getMilkteaCategories();
     milkTeaList = provider.throwMilkteaList;
-    MyProvider provider2 = Provider.of<MyProvider>(context, listen: false);
-    provider2.getFruitjuiceCategories();
-    fruitjuiceList = provider2.throwFruitjuiceList;
-    MyProvider provider3 = Provider.of<MyProvider>(context, listen: false);
-    provider3.getStreetfoodCategories();
-    streetFoodList = provider3.throwStreetfoodList;
-    MyProvider provider4 = Provider.of<MyProvider>(context, listen: false);
-    provider4.getOtherCatetjgories();
-    otherList = provider4.throwOtherList;
+
+    provider.getFruitjuiceCategories();
+    fruitjuiceList = provider.throwFruitjuiceList;
+
+    provider.getStreetfoodCategories();
+    streetFoodList = provider.throwStreetfoodList;
+
+    provider.getOtherCategories();
+    otherList = provider.throwOtherList;
+
+    //===================================Single =================================
+    provider.getSingle();
+    streetFoodSingleList = provider.throwStreetFoodSingleList;
 
     return Scaffold(
-       resizeToAvoidBottomInset: false,
+      resizeToAvoidBottomInset: false,
       drawer: Drawer(
         child: SafeArea(
           child: Column(
@@ -238,20 +243,28 @@ class HomePageState extends State<HomePage> {
               childAspectRatio: 0.8,
               crossAxisSpacing: 20,
               mainAxisSpacing: 20,
-              children: [
-                bottomContainer(
-                    image: 'images/trasua.jpg', name: 'trà sữa trân châu đen', price: 123),
-                bottomContainer(
-                    image: 'images/banhtrang.jpg',
-                    name: 'bánh tráng trộn ab',
-                    price: 123),
-                bottomContainer(
-                    image: 'images/trasua.jpg', name: 'trà sữa', price: 123),
-                bottomContainer(
-                    image: 'images/banhtrang.jpg',
-                    name: 'bánh tráng',
-                    price: 123),
-              ],
+                children : streetFoodSingleList.map(
+                  (e) => bottomContainer(
+                      image: e.image, 
+                      name: e.name, 
+                      price: e.price),
+                ).toList()
+              // children: [
+                // bottomContainer(
+                //     image: 'images/trasua.jpg',
+                //     name: 'trà sữa trân châu đen',
+                //     price: 123),
+                // bottomContainer(
+                //     image: 'images/banhtrang.jpg',
+                //     name: 'bánh tráng trộn ab',
+                //     price: 123),
+                // bottomContainer(
+                //     image: 'images/trasua.jpg', name: 'trà sữa', price: 123),
+                // bottomContainer(
+                //     image: 'images/banhtrang.jpg',
+                //     name: 'bánh tráng',
+                //     price: 123),
+              // ],
             ),
           ),
         ]),
