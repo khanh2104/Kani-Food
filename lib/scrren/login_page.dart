@@ -14,6 +14,7 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginState extends State<LoginPage> {
+   bool loadding = false;
   UserCredential? userCredential;
   RegExp regExp = RegExp(SignUpPage.pattern.toString());
   TextEditingController email = TextEditingController();
@@ -36,9 +37,15 @@ class _LoginState extends State<LoginPage> {
     } catch (e) {
       print('loi trong catch');
       print(e);
+      setState(() {
+        loadding = false;
+      });
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text('User not exits')));
     }
+    setState(() {
+      loadding = false;
+    });
   }
 
   void validation(context) {
@@ -59,6 +66,9 @@ class _LoginState extends State<LoginPage> {
           .showSnackBar(SnackBar(content: Text('Password is Empty')));
       return;
     } else {
+      setState(() {
+        loadding = true;
+      });
       getData(context);
     }
   }
@@ -137,7 +147,7 @@ class _LoginState extends State<LoginPage> {
             Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                button_Login(
+               loadding ? CircularProgressIndicator() :   button_Login(
                     color: Colors.green,
                     name: 'Login',
                     text_Color: Colors.white,

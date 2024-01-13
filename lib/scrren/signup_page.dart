@@ -13,6 +13,7 @@ class SignUpPage extends StatefulWidget {
 }
 
 class _SignUpState extends State<SignUpPage> {
+  bool checking = false;
   UserCredential? userCredential;
   RegExp regExp = RegExp(SignUpPage.pattern.toString());
   TextEditingController firstName = TextEditingController();
@@ -45,10 +46,16 @@ class _SignUpState extends State<SignUpPage> {
             content: Text('The account already exists for that email')));
       }
     } catch (e) {
+      setState(() {
+        checking = false;
+      });
       print(userCredential);
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text(e as String)));
     }
+      setState(() {
+        checking = false;
+      });
   }
 
   void validation(context) {
@@ -79,6 +86,9 @@ class _SignUpState extends State<SignUpPage> {
           .showSnackBar(SnackBar(content: Text('Password is Empty')));
       return;
     } else {
+        setState(() {
+        checking = true;
+      });
       sendData();
       Navigator.push(
         context,
@@ -186,7 +196,7 @@ class _SignUpState extends State<SignUpPage> {
                     SizedBox(
                       width: 5,
                     ),
-                    button_SignUp(
+                    checking? CircularProgressIndicator() : button_SignUp(
                         color: Colors.green,
                         name: "Register",
                         context: context,

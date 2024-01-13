@@ -1,6 +1,9 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bai_1/provider/my_provider.dart';
+import 'package:flutter_bai_1/scrren/detail_page.dart';
 import 'package:flutter_bai_1/scrren/home_page.dart';
+import 'package:flutter_bai_1/scrren/login_page.dart';
 import 'package:flutter_bai_1/scrren/signup_page.dart';
 import 'package:flutter_bai_1/scrren/welcome_page.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -24,7 +27,16 @@ class MyApp extends StatelessWidget {
             appBarTheme: AppBarTheme(
           color: Colors.green,
         )),
-        home: WelcomePage(),
+        home: DetailPage()
+        // home: StreamBuilder(
+        //     stream: FirebaseAuth.instance.authStateChanges(),
+        //     builder: (index, sncpshot) {
+        //       if (sncpshot.hasData) {
+        //         return HomePage();
+        //       } else {
+        //         return LoginPage();
+        //       }
+        //     }),
       ),
     );
   }
