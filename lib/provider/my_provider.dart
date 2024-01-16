@@ -1,7 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bai_1/modle/categories_modle.dart';
-import 'package:flutter_bai_1/modle/streetFood_modle.dart';
+import 'package:flutter_bai_1/modle/food_categories_modle.dart';
+import 'package:flutter_bai_1/modle/food_single_modle.dart';
 
 class MyProvider extends ChangeNotifier {
   //get categories milk tea
@@ -22,7 +23,7 @@ class MyProvider extends ChangeNotifier {
       newMilkteaCategoriesList.add(milkteaCategoriesModle);
       milkteaCategoriesList = newMilkteaCategoriesList;
     });
-     notifyListeners();
+    notifyListeners();
   }
 
   get throwMilkteaList {
@@ -47,7 +48,7 @@ class MyProvider extends ChangeNotifier {
       newFruitjuiceCategoriesList.add(fruitjuiceCategoriesModle);
       fruitjuiceCategoriesList = newFruitjuiceCategoriesList;
     });
-     notifyListeners();
+    notifyListeners();
   }
 
   get throwFruitjuiceList {
@@ -72,7 +73,7 @@ class MyProvider extends ChangeNotifier {
       newStreetfoodCategoriesList.add(streetfoodCategoriesModle);
       streetfoodCategoriesList = newStreetfoodCategoriesList;
     });
-     notifyListeners();
+    notifyListeners();
   }
 
   get throwStreetfoodList {
@@ -97,7 +98,7 @@ class MyProvider extends ChangeNotifier {
       newOtherCategoriesList.add(otherCategoriesModle);
       otherCategoriesList = newOtherCategoriesList;
     });
-     notifyListeners();
+    notifyListeners();
   }
 
   get throwOtherList {
@@ -126,5 +127,30 @@ class MyProvider extends ChangeNotifier {
 
   get throwStreetFoodSingleList {
     return singleList;
+  }
+
+//==========================================get Food order by categories======================
+  List<FoodCategoriesModle> foodCategoriesList = [];
+  late FoodCategoriesModle foodCategoriesModle;
+  Future<void> getFoodCategoriesList() async {
+    List<FoodCategoriesModle> newFoodCategoriesList = [];
+    QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+        .collection('foodcategories')
+        .doc('YlVACmgasQZCLHH36M3a')
+        .collection('streetfood')
+        .get();
+    querySnapshot.docs.forEach((element) {
+      foodCategoriesModle = FoodCategoriesModle(
+          image: element.get('image'),
+          name: element.get('name'),
+          price: element.get('price'));
+      newFoodCategoriesList.add(foodCategoriesModle);
+      foodCategoriesList = newFoodCategoriesList;
+    });
+    notifyListeners();
+  }
+
+  get throwFoodCategoriesList {
+    return foodCategoriesList;
   }
 }

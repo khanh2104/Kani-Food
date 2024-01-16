@@ -2,8 +2,11 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bai_1/modle/categories_modle.dart';
-import 'package:flutter_bai_1/modle/streetFood_modle.dart';
+import 'package:flutter_bai_1/modle/food_categories_modle.dart';
+import 'package:flutter_bai_1/modle/food_single_modle.dart';
 import 'package:flutter_bai_1/provider/my_provider.dart';
+import 'package:flutter_bai_1/scrren/categories.dart';
+import 'package:flutter_bai_1/scrren/widget/bottom_container.dart';
 import 'package:provider/provider.dart';
 
 class HomePage extends StatefulWidget {
@@ -17,23 +20,28 @@ class HomePageState extends State<HomePage> {
   List<CategoriesModle> otherList = [];
   List<CategoriesModle> streetFoodList = [];
   List<SingleModle> streetFoodSingleList = [];
+  List<FoodCategoriesModle> foodCategories = [];
   Widget categoriesContainer({
+    required void Function() onTap,
     required String image,
     required String name,
   }) {
     return Column(
       children: [
-        Container(
-          margin: EdgeInsets.only(left: 20),
-          height: 70,
-          width: 70,
-          decoration: BoxDecoration(
-            image: DecorationImage(
-              image: NetworkImage(image),
-              fit: BoxFit.cover,
+        GestureDetector(
+          onTap: onTap,
+          child: Container(
+            margin: EdgeInsets.only(left: 20),
+            height: 70,
+            width: 70,
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: NetworkImage(image),
+                fit: BoxFit.cover,
+              ),
+              color: Colors.grey,
+              borderRadius: BorderRadius.circular(10),
             ),
-            color: Colors.grey,
-            borderRadius: BorderRadius.circular(10),
           ),
         ),
         SizedBox(
@@ -60,49 +68,11 @@ class HomePageState extends State<HomePage> {
     );
   }
 
-  Widget bottomContainer({
-    required String image,
-    required name,
-    required int price,
-  }) {
-    return Container(
-      height: 200,
-      width: 200,
-      decoration: BoxDecoration(
-        color: Colors.grey,
-        borderRadius: BorderRadius.circular(50),
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          CircleAvatar(
-            radius: 60,
-            backgroundImage: NetworkImage(image),
-          ),
-          ListTile(
-            contentPadding: EdgeInsets.symmetric(horizontal: 10.0),
-            leading: Container(
-              width: 120,
-              height: 50,
-              child: Text(
-                name,
-                style: TextStyle(fontSize: 20, color: Colors.black, height: 1),
-              ),
-            ),
-            trailing: Text(
-              "$price" + "K",
-              style: TextStyle(fontSize: 18, color: Colors.black),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
   Widget milkteaCategoriesComponent() {
     return Row(
       children: milkTeaList
-          .map((e) => categoriesContainer(image: e.image, name: e.name))
+          .map((e) =>
+              categoriesContainer(image: e.image, name: e.name, onTap: () {}))
           .toList(),
     );
   }
@@ -110,7 +80,8 @@ class HomePageState extends State<HomePage> {
   Widget fruitjuiceCategoriesComponent() {
     return Row(
       children: fruitjuiceList
-          .map((e) => categoriesContainer(image: e.image, name: e.name))
+          .map((e) =>
+              categoriesContainer(image: e.image, name: e.name, onTap: () {}))
           .toList(),
     );
   }
@@ -118,7 +89,13 @@ class HomePageState extends State<HomePage> {
   Widget streetfoodCategoriesComponent() {
     return Row(
       children: streetFoodList
-          .map((e) => categoriesContainer(image: e.image, name: e.name))
+          .map((e) => categoriesContainer(
+              image: e.image,
+              name: e.name,
+              onTap: () {
+                Navigator.of(context).pushReplacement(MaterialPageRoute(
+                    builder: (context) => Categories(list: foodCategories)));
+              }))
           .toList(),
     );
   }
@@ -126,7 +103,8 @@ class HomePageState extends State<HomePage> {
   Widget otherCategoriesComponent() {
     return Row(
       children: otherList
-          .map((e) => categoriesContainer(image: e.image, name: e.name))
+          .map((e) =>
+              categoriesContainer(image: e.image, name: e.name, onTap: () {}))
           .toList(),
     );
   }
@@ -149,7 +127,10 @@ class HomePageState extends State<HomePage> {
     //===================================Single =================================
     provider.getSingle();
     streetFoodSingleList = provider.throwStreetFoodSingleList;
-
+    //===================================get list categories =====================
+    provider.getFoodCategoriesList();
+    foodCategories = provider.throwFoodCategoriesList;
+    streetFoodSingleList = provider.throwStreetFoodSingleList;
     return Scaffold(
       resizeToAvoidBottomInset: false,
       drawer: Drawer(
@@ -237,19 +218,19 @@ class HomePageState extends State<HomePage> {
           Container(
             height: 510,
             child: GridView.count(
-              shrinkWrap: false,
-              primary: false,
-              crossAxisCount: 2,
-              childAspectRatio: 0.8,
-              crossAxisSpacing: 20,
-              mainAxisSpacing: 20,
-                children : streetFoodSingleList.map(
-                  (e) => bottomContainer(
-                      image: e.image, 
-                      name: e.name, 
-                      price: e.price),
-                ).toList()
-              // children: [
+                shrinkWrap: false,
+                primary: false,
+                crossAxisCount: 2,
+                childAspectRatio: 0.8,
+                crossAxisSpacing: 20,
+                mainAxisSpacing: 20,
+                children: streetFoodSingleList
+                    .map(
+                      (e) => Bottomcontainer(
+                          image: e.image, name: e.name, price: e.price),
+                    )
+                    .toList()
+                // children: [
                 // bottomContainer(
                 //     image: 'images/trasua.jpg',
                 //     name: 'trà sữa trân châu đen',
@@ -264,8 +245,8 @@ class HomePageState extends State<HomePage> {
                 //     image: 'images/banhtrang.jpg',
                 //     name: 'bánh tráng',
                 //     price: 123),
-              // ],
-            ),
+                // ],
+                ),
           ),
         ]),
       ),
