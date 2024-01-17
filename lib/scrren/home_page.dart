@@ -6,6 +6,7 @@ import 'package:flutter_bai_1/modle/food_categories_modle.dart';
 import 'package:flutter_bai_1/modle/food_single_modle.dart';
 import 'package:flutter_bai_1/provider/my_provider.dart';
 import 'package:flutter_bai_1/scrren/categories.dart';
+import 'package:flutter_bai_1/scrren/detail_page.dart';
 import 'package:flutter_bai_1/scrren/widget/bottom_container.dart';
 import 'package:provider/provider.dart';
 
@@ -226,8 +227,24 @@ class HomePageState extends State<HomePage> {
                 mainAxisSpacing: 20,
                 children: streetFoodSingleList
                     .map(
-                      (e) => Bottomcontainer(
-                          image: e.image, name: e.name, price: e.price),
+                      (e) => GestureDetector(
+                        onTap: () {
+                          Navigator.of(context).pushReplacement(
+                            MaterialPageRoute(
+                              builder: (context) => DetailPage(
+                                image: e.image,
+                                name: e.name,
+                                price: e.price,
+                              ),
+                            ),
+                          );
+                        },
+                        child: Bottomcontainer(
+                          image: e.image,
+                          name: e.name,
+                          price: e.price,
+                        ),
+                      ),
                     )
                     .toList()
                 // children: [

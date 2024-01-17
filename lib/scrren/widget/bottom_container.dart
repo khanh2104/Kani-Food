@@ -6,9 +6,10 @@ class Bottomcontainer extends StatelessWidget {
   final String name;
   final int price;
   Bottomcontainer({
+    // required void Function() onTap,
     required this.image,
     required this.name,
-    required this.price,
+    required this.price, 
   });
   @override
   Widget build(BuildContext context) {

@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bai_1/modle/food_categories_modle.dart';
+import 'package:flutter_bai_1/scrren/detail_page.dart';
 import 'package:flutter_bai_1/scrren/home_page.dart';
 import 'package:flutter_bai_1/scrren/widget/bottom_container.dart';
 
@@ -30,8 +31,24 @@ class Categories extends StatelessWidget {
           mainAxisSpacing: 20,
           children: list
               .map(
-                (e) => Bottomcontainer(
-                    image: e.image, name: e.name, price: e.price),
+                (e) => GestureDetector(
+                  onTap: () {
+                    Navigator.of(context).pushReplacement(
+                      MaterialPageRoute(
+                        builder: (context) => DetailPage(
+                          image: e.image,
+                          name: e.name,
+                          price: e.price,
+                        ),
+                      ),
+                    );
+                  },
+                  child: Bottomcontainer(
+                    image: e.image,
+                    name: e.name,
+                    price: e.price,
+                  ),
+                ),
               )
               .toList()),
     );

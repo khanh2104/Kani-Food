@@ -1,8 +1,15 @@
-
-
 import 'package:flutter/material.dart';
+import 'package:flutter_bai_1/scrren/home_page.dart';
 
 class DetailPage extends StatelessWidget {
+  final String image;
+  final String name;
+  final int price;
+  DetailPage({
+    required this.image,
+    required this.name,
+    required this.price,
+  });
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -10,7 +17,13 @@ class DetailPage extends StatelessWidget {
         elevation: 0.0,
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () {},
+          onPressed: () {
+            Navigator.of(context).pushReplacement(
+              MaterialPageRoute(
+                builder: (context) => HomePage(),
+              ),
+            );
+          },
         ),
       ),
       body: Column(children: [
@@ -18,7 +31,7 @@ class DetailPage extends StatelessWidget {
           child: Container(
             child: CircleAvatar(
               radius: 110,
-              backgroundImage: AssetImage('images/banhtrang.jpg'),
+              backgroundImage: NetworkImage(image),
             ),
           ),
         ),
@@ -35,7 +48,7 @@ class DetailPage extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  "Bánh tráng nướng",
+                  name,
                   style: TextStyle(fontSize: 40, color: Colors.black),
                 ),
                 Text(
@@ -51,9 +64,9 @@ class DetailPage extends StatelessWidget {
                           height: 40,
                           width: 40,
                           decoration: BoxDecoration(
-                              color: Colors.black,
+                              color: Colors.red,
                               borderRadius: BorderRadius.circular(10)),
-                          child: Icon(Icons.remove),
+                          child: Icon(Icons.remove_circle_outline),
                         ),
                         SizedBox(
                           width: 10,
@@ -61,7 +74,7 @@ class DetailPage extends StatelessWidget {
                         Text(
                           "1",
                           style: TextStyle(
-                              color: Colors.black,
+                              color: Colors.red,
                               fontSize: 20,
                               fontWeight: FontWeight.bold),
                         ),
@@ -72,13 +85,14 @@ class DetailPage extends StatelessWidget {
                           height: 40,
                           width: 40,
                           decoration: BoxDecoration(
-                              color: Colors.black,
+                              color: Colors.red,
                               borderRadius: BorderRadius.circular(10)),
+                          child: Icon(Icons.add_circle_outline),
                         )
                       ],
                     ),
                     Text(
-                      "so tien",
+                      "$price" + "K",
                       style: TextStyle(color: Colors.black, fontSize: 30),
                     ),
                   ],
