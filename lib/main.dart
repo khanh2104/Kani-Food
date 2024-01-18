@@ -28,16 +28,16 @@ class MyApp extends StatelessWidget {
             appBarTheme: AppBarTheme(
           color: Colors.green,
         )),
-        home: CartPage(),
-        // home: StreamBuilder(
-        //     stream: FirebaseAuth.instance.authStateChanges(),
-        //     builder: (index, sncpshot) {
-        //       if (sncpshot.hasData) {
-        //         return HomePage();
-        //       } else {
-        //         return LoginPage();
-        //       }
-        //     }),
+        // home: CartPage(),
+        home: StreamBuilder(
+            stream: FirebaseAuth.instance.authStateChanges(),
+            builder: (index, sncpshot) {
+              if (sncpshot.hasData) {
+                return HomePage();
+              } else {
+                return LoginPage();
+              }
+            }),
       ),
     );
   }

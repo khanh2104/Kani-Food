@@ -1,9 +1,81 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_bai_1/provider/my_provider.dart';
+import 'package:flutter_bai_1/scrren/home_page.dart';
+import 'package:provider/provider.dart';
 
 class CartPage extends StatelessWidget {
+  Widget cartItem(
+      {required String image,
+      required String name,
+      required int price,
+      required void Function() onTap,
+      required int quantity}) {
+    return Row(
+      children: [
+        Container(
+          width: 170,
+          height: 170,
+          child: CircleAvatar(
+            backgroundImage: NetworkImage(image),
+          ),
+        ),
+        SizedBox(
+          width: 20,
+        ),
+        Expanded(
+            child: Stack(
+          alignment: Alignment.topRight,
+          children: [
+            Container(
+              height: 200,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    name,
+                    style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 30,
+                        fontWeight: FontWeight.bold),
+                  ),
+                  Text(
+                    "burger bhout acha hain",
+                    style: TextStyle(color: Colors.black),
+                  ),
+                  Text(
+                    "\$ $price",
+                    style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold),
+                  ),
+                  Row(
+                    children: [
+                      Text(
+                        "$quantity",
+                        style: TextStyle(fontSize: 20, color: Colors.black),
+                      )
+                    ],
+                  )
+                ],
+              ),
+            ),
+            IconButton(
+              icon: Icon(Icons.close, color: Colors.black),
+              onPressed: onTap,
+            )
+          ],
+        )),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    MyProvider provider = Provider.of<MyProvider>(context);
+    var total = provider.totalPrice();
     return Scaffold(
       bottomNavigationBar: Container(
         margin: EdgeInsets.only(bottom: 20, left: 20, right: 20),
@@ -15,7 +87,8 @@ class CartPage extends StatelessWidget {
         ),
         child:
             Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-          Text("1234", style: TextStyle(color: Colors.black, fontSize: 30)),
+          Text("$total" + "K",
+              style: TextStyle(color: Colors.black, fontSize: 30)),
           Text("Check out",
               style: TextStyle(
                   color: Colors.black,
@@ -23,86 +96,31 @@ class CartPage extends StatelessWidget {
                   fontWeight: FontWeight.bold))
         ]),
       ),
-      body: Column(
-        children: [
-          Row(
-            children: [
-              Container(
-                width: 170,
-                height: 170,
-                child: CircleAvatar(
-                  backgroundImage: AssetImage('images/banhtrang.jpg'),
-                ),
-              ),
-              SizedBox(
-                width: 20,
-              ),
-              Expanded(
-                  child: Stack(
-                alignment: Alignment.topRight,
-                children: [
-                  Container(
-                    height: 200,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text("FOOD",
-                            style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 40,
-                                fontWeight: FontWeight.bold)),
-                        Text("SO TIEN",
-                            style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 40,
-                                fontWeight: FontWeight.bold)),
-                        Row(
-                          children: [
-                            IconButton(
-                                onPressed: () {},
-                                icon: Icon(
-                                  Icons.remove_circle_outline,
-                                  color: Colors.white,
-                                  size: 40,
-                                )),
-                            SizedBox(width: 10),
-                            Text("1",
-                                style: TextStyle(
-                                    color: Colors.black,
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold)),
-                            SizedBox(width: 10),
-                            IconButton(
-                                onPressed: () {},
-                                icon: Icon(
-                                  Icons.add_circle_outline,
-                                  color: Colors.white,
-                                  size: 40,
-                                )),
-                          ],
-                        )
-                      ],
-                    ),
-                  ),
-                  IconButton(
-                    icon: Icon(
-                      Icons.close,
-                      color: Colors.black,
-                    ),
-                    onPressed: () {},
-                  ),
-                ],
-              ))
-            ],
-          )
-        ],
-      ),
       appBar: AppBar(
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
-          onPressed: () {},
+          onPressed: () {
+            Navigator.of(context).pushReplacement(
+              MaterialPageRoute(
+                builder: (context) => HomePage(),
+              ),
+            );
+          },
         ),
+      ),
+      body: ListView.builder(
+        itemCount: provider.cartList.length,
+        itemBuilder: (ctx, index) {
+          return cartItem(
+              image: provider.cartList[index].image,
+              name: provider.cartList[index].name,
+              price: provider.cartList[index].price,
+              quantity: provider.cartList[index].quantity,
+              onTap: () {
+                provider.delete(index);
+                
+              });
+        },
       ),
     );
   }

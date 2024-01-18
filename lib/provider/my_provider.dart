@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bai_1/modle/cart_modle.dart';
 import 'package:flutter_bai_1/modle/categories_modle.dart';
 import 'package:flutter_bai_1/modle/food_categories_modle.dart';
 import 'package:flutter_bai_1/modle/food_single_modle.dart';
@@ -152,5 +153,47 @@ class MyProvider extends ChangeNotifier {
 
   get throwFoodCategoriesList {
     return foodCategoriesList;
+  }
+
+//==========================================================add to cart===================================================
+  List<CartModle> cartList = [];
+  List<CartModle> newCartList = [];
+  late CartModle cartModel;
+  void addToCart(
+      {required String image,
+      required String name,
+      required int price,
+      required int quantity}) {
+    cartModel =
+        CartModle(name: name, image: image, price: price, quantity: quantity);
+    newCartList.add(cartModel);
+    cartList = newCartList;
+  }
+
+  get throwCartList {
+    return cartList;
+  }
+
+//===============================================make total============================
+  int totalPrice() {
+    int total = 0;
+    cartList.forEach((element) {
+      total += element.price * element.quantity;
+    });
+    return total;
+  }
+
+//==================================================delete cart ====================================
+   late int deleteIndex ;
+  void getDeleteIndex(int index) {
+    deleteIndex = index;
+  }
+
+  void delete(int deleteIndex) {
+    print("check delete");
+    print(deleteIndex);
+    print(cartList);
+    cartList.removeAt(deleteIndex);
+    notifyListeners();
   }
 }

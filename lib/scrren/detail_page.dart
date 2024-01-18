@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bai_1/provider/my_provider.dart';
+import 'package:flutter_bai_1/scrren/cart_page.dart';
 import 'package:flutter_bai_1/scrren/home_page.dart';
+import 'package:provider/provider.dart';
 
-class DetailPage extends StatelessWidget {
+class DetailPage extends StatefulWidget {
   final String image;
   final String name;
   final int price;
@@ -10,8 +13,17 @@ class DetailPage extends StatelessWidget {
     required this.name,
     required this.price,
   });
+
+  @override
+  State<DetailPage> createState() => _DetailPageState();
+}
+
+class _DetailPageState extends State<DetailPage> {
+  int quantity = 1;
+  int count = 0;
   @override
   Widget build(BuildContext context) {
+    MyProvider provider = Provider.of<MyProvider>(context);
     return Scaffold(
       appBar: AppBar(
         elevation: 0.0,
@@ -31,7 +43,7 @@ class DetailPage extends StatelessWidget {
           child: Container(
             child: CircleAvatar(
               radius: 110,
-              backgroundImage: NetworkImage(image),
+              backgroundImage: NetworkImage(widget.image),
             ),
           ),
         ),
@@ -48,7 +60,7 @@ class DetailPage extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  name,
+                  widget.name,
                   style: TextStyle(fontSize: 40, color: Colors.black),
                 ),
                 Text(
@@ -60,13 +72,20 @@ class DetailPage extends StatelessWidget {
                   children: [
                     Row(
                       children: [
-                        Container(
-                          height: 40,
-                          width: 40,
-                          decoration: BoxDecoration(
-                              color: Colors.red,
-                              borderRadius: BorderRadius.circular(10)),
-                          child: Icon(Icons.remove_circle_outline),
+                        GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              quantity--;
+                            });
+                          },
+                          child: Container(
+                            height: 40,
+                            width: 40,
+                            decoration: BoxDecoration(
+                                color: Colors.red,
+                                borderRadius: BorderRadius.circular(10)),
+                            child: Icon(Icons.remove_circle_outline),
+                          ),
                         ),
                         SizedBox(
                           width: 10,
@@ -81,18 +100,25 @@ class DetailPage extends StatelessWidget {
                         SizedBox(
                           width: 10,
                         ),
-                        Container(
-                          height: 40,
-                          width: 40,
-                          decoration: BoxDecoration(
-                              color: Colors.red,
-                              borderRadius: BorderRadius.circular(10)),
-                          child: Icon(Icons.add_circle_outline),
+                        GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              quantity++;
+                            });
+                          },
+                          child: Container(
+                            height: 40,
+                            width: 40,
+                            decoration: BoxDecoration(
+                                color: Colors.red,
+                                borderRadius: BorderRadius.circular(10)),
+                            child: Icon(Icons.add_circle_outline),
+                          ),
                         )
                       ],
                     ),
                     Text(
-                      "$price" + "K",
+                      "${widget.price}" + "K",
                       style: TextStyle(color: Colors.black, fontSize: 30),
                     ),
                   ],
@@ -115,7 +141,16 @@ class DetailPage extends StatelessWidget {
                   height: 55,
                   width: double.infinity,
                   child: ElevatedButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      provider.addToCart(
+                          image: widget.image,
+                          name: widget.name,
+                          price: widget.price,
+                          quantity: quantity);
+                      Navigator.of(context).pushReplacement(MaterialPageRoute(
+                        builder: (context) => CartPage(),
+                      ));
+                    },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.green,
                       shape: RoundedRectangleBorder(
