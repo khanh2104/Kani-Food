@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
@@ -5,43 +6,46 @@ class Bottomcontainer extends StatelessWidget {
   final String image;
   final String name;
   final int price;
+  final String describle;
   Bottomcontainer({
     // required void Function() onTap,
     required this.image,
     required this.name,
-    required this.price, 
+    required this.price,
+    required this.describle,
   });
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
     return Container(
-      height: 200,
-      width: 200,
-      decoration: BoxDecoration(
-        color: Colors.grey,
-        borderRadius: BorderRadius.circular(50),
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+      child: Row(
         children: [
-          CircleAvatar(
-            radius: 60,
-            backgroundImage: NetworkImage(image),
+          Column(
+            children: [
+              CircleAvatar(
+                radius: 30,
+                backgroundImage: NetworkImage(image),
+              ),
+            ],
           ),
-          ListTile(
-            contentPadding: EdgeInsets.symmetric(horizontal: 10.0),
-            leading: Container(
-              width: 120,
-              height: 50,
-              child: Text(
+          SizedBox(width: 20),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
                 name,
                 style: TextStyle(fontSize: 20, color: Colors.black, height: 1),
               ),
-            ),
-            trailing: Text(
-              "$price" + "K",
-              style: TextStyle(fontSize: 18, color: Colors.black),
-            ),
+              Text(
+                describle,
+                style: TextStyle(fontSize: 15),
+              ),
+              Text(
+                "$price" + "K",
+                style: TextStyle(
+                    fontSize: 18, color: Color.fromARGB(255, 227, 24, 24)),
+              ),
+            ],
           ),
         ],
       ),

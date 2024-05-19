@@ -84,7 +84,7 @@ class _LoginState extends State<LoginPage> {
       width: 200,
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
-          primary: color,
+          backgroundColor: color,
           side: BorderSide(color: Colors.green, width: 2),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(30),

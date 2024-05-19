@@ -8,10 +8,12 @@ class DetailPage extends StatefulWidget {
   final String image;
   final String name;
   final int price;
+  final String describle;
   DetailPage({
     required this.image,
     required this.name,
     required this.price,
+    required this.describle,
   });
 
   @override
@@ -21,6 +23,20 @@ class DetailPage extends StatefulWidget {
 class _DetailPageState extends State<DetailPage> {
   int quantity = 1;
   int count = 0;
+  void _decrementQuantity() {
+    if (quantity > 0) {
+      setState(() {
+        quantity--;
+      });
+    }
+  }
+
+  void _incrementQuantity() {
+    setState(() {
+      quantity++;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     MyProvider provider = Provider.of<MyProvider>(context);
@@ -56,16 +72,12 @@ class _DetailPageState extends State<DetailPage> {
               borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(10), topRight: Radius.circular(10))),
           child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   widget.name,
                   style: TextStyle(fontSize: 40, color: Colors.black),
-                ),
-                Text(
-                  "any ...",
-                  style: TextStyle(color: Colors.black),
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -74,9 +86,7 @@ class _DetailPageState extends State<DetailPage> {
                       children: [
                         GestureDetector(
                           onTap: () {
-                            setState(() {
-                              quantity--;
-                            });
+                            _decrementQuantity();
                           },
                           child: Container(
                             height: 40,
@@ -91,7 +101,7 @@ class _DetailPageState extends State<DetailPage> {
                           width: 10,
                         ),
                         Text(
-                          "1",
+                          quantity.toString(),
                           style: TextStyle(
                               color: Colors.red,
                               fontSize: 20,
@@ -102,9 +112,7 @@ class _DetailPageState extends State<DetailPage> {
                         ),
                         GestureDetector(
                           onTap: () {
-                            setState(() {
-                              quantity++;
-                            });
+                            _incrementQuantity();
                           },
                           child: Container(
                             height: 40,
@@ -124,35 +132,40 @@ class _DetailPageState extends State<DetailPage> {
                   ],
                 ),
                 Text(
-                  "Description",
+                  "Mô tả :",
                   style: TextStyle(
                       color: Colors.black,
                       fontSize: 20,
                       fontWeight: FontWeight.bold),
                 ),
                 Text(
-                  "Food delivery apps are third-party delivery services hosted on mobile applications that restaurants or retailers partner with to showcase their menu and food offerings",
+                  widget.describle,
                   style: TextStyle(
                     color: Colors.black,
                     fontSize: 19,
                   ),
                 ),
+                Spacer(),
                 Container(
                   height: 55,
                   width: double.infinity,
                   child: ElevatedButton(
                     onPressed: () {
-                      provider.addToCart(
-                          image: widget.image,
-                          name: widget.name,
-                          price: widget.price,
-                          quantity: quantity);
-                      Navigator.of(context).pushReplacement(MaterialPageRoute(
-                        builder: (context) => CartPage(),
-                      ));
+                      if (quantity > 0) {
+                        provider.addToCart(
+                            image: widget.image,
+                            name: widget.name,
+                            price: widget.price,
+                            quantity: quantity);
+                        Navigator.of(context).pushReplacement(MaterialPageRoute(
+                          builder: (context) => CartPage(),
+                        ));
+                      }
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.green,
+                      backgroundColor: quantity > 0
+                          ? Color.fromARGB(255, 248, 250, 248)
+                          : Color.fromARGB(255, 10, 76, 10),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10),
                       ),

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_bai_1/modle/cart_modle.dart';
+import 'package:flutter_bai_1/modle/checkout_modle.dart';
 import 'package:flutter_bai_1/provider/my_provider.dart';
 import 'package:flutter_bai_1/scrren/home_page.dart';
 import 'package:provider/provider.dart';
@@ -89,11 +91,47 @@ class CartPage extends StatelessWidget {
             Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
           Text("$total" + "K",
               style: TextStyle(color: Colors.black, fontSize: 30)),
-          Text("Check out",
-              style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 25,
-                  fontWeight: FontWeight.bold))
+          ElevatedButton(
+              onPressed: () {
+                // Retrieve the MyProvider instance
+                MyProvider provider =
+                    Provider.of<MyProvider>(context, listen: false);
+
+                // Calculate the total price
+                // var total = provider.totalPrice();
+
+                // Create a FoodCheckoutModel instance
+                FoodCheckoutModel checkoutModel = FoodCheckoutModel(
+                  nameCustomer: "Nhinho",
+                  total: total,
+                  dateCreated: DateTime.now(),
+                  noteOrder: "Note for order", // Replace with actual note
+                  quantityOrder: provider.cartList.length,
+                  orderList: convertCartToOrderList(provider.cartList),
+                );
+
+                // Insert data into Firebase
+                insertDataIntoFirebase(checkoutModel).then((_) {
+                  // Clear the cart after successful insertion
+                  // provider.clearCart();
+
+                  // Navigate to home page
+                  Navigator.of(context).pushReplacement(
+                    MaterialPageRoute(
+                      builder: (context) => HomePage(),
+                    ),
+                  );
+                }).catchError((error) {
+                  // Handle error if insertion fails
+                  print('Error inserting data into Firebase: $error');
+                  // Optionally, show an error message to the user
+                });
+              },
+              child: Text("Thanh toán",
+                  style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 25,
+                      fontWeight: FontWeight.bold)))
         ]),
       ),
       appBar: AppBar(
@@ -118,10 +156,26 @@ class CartPage extends StatelessWidget {
               quantity: provider.cartList[index].quantity,
               onTap: () {
                 provider.delete(index);
-                
               });
         },
       ),
     );
   }
+}
+
+Map<FoodOrderItemModle, int> convertCartToOrderList(List<CartModle> cartList) {
+  
+  Map<FoodOrderItemModle, int> orderList = {};
+
+  cartList.forEach((cartItem) {
+    // Assuming your FoodOrderItemModle class has a property 'name' representing the food name
+    // String foodName = cartItem.food_name;
+    FoodOrderItemModle orderItem = FoodOrderItemModle(
+      food_name: cartItem.name,
+      note: "burger bhout acha hain",
+      quantity: cartItem.quantity,
+    );
+    orderList[orderItem] = cartItem.quantity;
+  });
+  return orderList;
 }

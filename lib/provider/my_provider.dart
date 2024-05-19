@@ -4,7 +4,7 @@ import 'package:flutter_bai_1/modle/cart_modle.dart';
 import 'package:flutter_bai_1/modle/categories_modle.dart';
 import 'package:flutter_bai_1/modle/food_categories_modle.dart';
 import 'package:flutter_bai_1/modle/food_single_modle.dart';
-
+import 'package:flutter_bai_1/modle/checkout_modle.dart';
 class MyProvider extends ChangeNotifier {
   //get categories milk tea
   List<CategoriesModle> milkteaCategoriesList = [];
@@ -30,7 +30,30 @@ class MyProvider extends ChangeNotifier {
   get throwMilkteaList {
     return milkteaCategoriesList;
   }
+ //get categories spaghetti
+  List<CategoriesModle> spaghettiCategoriesList = [];
+  late CategoriesModle spaghettiCategoriesModle;
+  Future<void> getSpaghettiCategories() async {
+    List<CategoriesModle> newSpaghettiCategoriesList = [];
+    QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+        .collection('categories')
+        .doc('fcbMhullJM7x4SaD6KDh')
+        .collection('spaghetti')
+        .get();
+    querySnapshot.docs.forEach((element) {
+      spaghettiCategoriesModle = CategoriesModle(
+        image: element.get('image'),
+        name: element.get('name'),
+      );
+      newSpaghettiCategoriesList.add(spaghettiCategoriesModle);
+      spaghettiCategoriesList = newSpaghettiCategoriesList;
+    });
+    notifyListeners();
+  }
 
+  get throwSpaghetti {
+    return spaghettiCategoriesList;
+  }
 // get categories fruit juice
   List<CategoriesModle> fruitjuiceCategoriesList = [];
   late CategoriesModle fruitjuiceCategoriesModle;
@@ -119,7 +142,8 @@ class MyProvider extends ChangeNotifier {
       singleModle = SingleModle(
           image: element.get('image'),
           name: element.get('name'),
-          price: element.get('price'));
+          price: element.get('price'),
+          describle: element.get('describle'));
       newSingleList.add(singleModle);
       singleList = newSingleList;
     });
@@ -144,7 +168,8 @@ class MyProvider extends ChangeNotifier {
       foodCategoriesModle = FoodCategoriesModle(
           image: element.get('image'),
           name: element.get('name'),
-          price: element.get('price'));
+          price: element.get('price'),
+          describle: element.get('describle'));
       newFoodCategoriesList.add(foodCategoriesModle);
       foodCategoriesList = newFoodCategoriesList;
     });
@@ -197,3 +222,42 @@ class MyProvider extends ChangeNotifier {
     notifyListeners();
   }
 }
+
+//=================================================check out ===================================================
+
+
+ Future<void> insertDataIntoFirebase(FoodCheckoutModel checkoutModel) async {
+  try {
+    // Step 1: Access Firestore instance
+    FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+    // Step 2: Convert your FoodCheckoutModel object into a format suitable for Firestore
+    Map<String, dynamic> checkoutData = {
+      'nameCustomer': checkoutModel.nameCustomer,
+      'total': checkoutModel.total,
+      'dateCreated': checkoutModel.dateCreated,
+      'noteOrder': checkoutModel.noteOrder,
+      'quantityOrder': checkoutModel.quantityOrder,
+      'orderList': convertOrderListToJson(checkoutModel.orderList),
+    };
+
+    // Step 3: Insert data into Firestore
+    await firestore.collection('checkOut').add(checkoutData);
+  } catch (error) {
+    print('Error inserting data into Firebase: $error');
+  }
+}
+
+// Helper function to convert orderList to JSON
+Map<String, dynamic> convertOrderListToJson(Map<FoodOrderItemModle, int> orderList) {
+  Map<String, dynamic> jsonMap = {};
+  orderList.forEach((foodOrderItem, quantity) {
+    jsonMap[foodOrderItem.food_name] = {
+      'note': foodOrderItem.note,
+      'quantity': quantity,
+    };
+  });
+  return jsonMap;
+}
+      
+  

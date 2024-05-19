@@ -39,6 +39,7 @@ class Categories extends StatelessWidget {
                           image: e.image,
                           name: e.name,
                           price: e.price,
+                          describle: e.describle,
                         ),
                       ),
                     );
@@ -47,6 +48,7 @@ class Categories extends StatelessWidget {
                     image: e.image,
                     name: e.name,
                     price: e.price,
+                    describle: e.describle,
                   ),
                 ),
               )

@@ -18,6 +18,7 @@ class HomePage extends StatefulWidget {
 class HomePageState extends State<HomePage> {
   List<CategoriesModle> milkTeaList = [];
   List<CategoriesModle> fruitjuiceList = [];
+  List<CategoriesModle> spaghettiList = [];
   List<CategoriesModle> otherList = [];
   List<CategoriesModle> streetFoodList = [];
   List<SingleModle> streetFoodSingleList = [];
@@ -87,6 +88,15 @@ class HomePageState extends State<HomePage> {
     );
   }
 
+  Widget spaghettiCategoriesComponent() {
+    return Row(
+      children: spaghettiList
+          .map((e) =>
+              categoriesContainer(image: e.image, name: e.name, onTap: () {}))
+          .toList(),
+    );
+  }
+
   Widget streetfoodCategoriesComponent() {
     return Row(
       children: streetFoodList
@@ -125,6 +135,8 @@ class HomePageState extends State<HomePage> {
     provider.getOtherCategories();
     otherList = provider.throwOtherList;
 
+    provider.getSpaghettiCategories();
+    spaghettiList = provider.throwSpaghetti;
     //===================================Single =================================
     provider.getSingle();
     streetFoodSingleList = provider.throwStreetFoodSingleList;
@@ -192,7 +204,8 @@ class HomePageState extends State<HomePage> {
             Column(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
           TextField(
             decoration: InputDecoration(
-              hintText: "Search Food",
+              contentPadding: EdgeInsets.symmetric(vertical: 10),
+              hintText: "Hãy tìm kiếm món bạn yêu thích nhé ",
               hintStyle: TextStyle(color: Colors.white),
               prefixIcon: Icon(
                 Icons.search,
@@ -201,6 +214,7 @@ class HomePageState extends State<HomePage> {
               filled: true,
               fillColor: Color.fromARGB(255, 232, 118, 118),
               border: OutlineInputBorder(
+                  
                   borderSide: BorderSide.none,
                   borderRadius: BorderRadius.circular(10)),
             ),
@@ -212,58 +226,47 @@ class HomePageState extends State<HomePage> {
                 milkteaCategoriesComponent(),
                 fruitjuiceCategoriesComponent(),
                 streetfoodCategoriesComponent(),
+                spaghettiCategoriesComponent(),
                 otherCategoriesComponent()
               ],
             ),
           ),
+          // SizedBox(height: 20,),
           Container(
-            height: 510,
-            child: GridView.count(
-                shrinkWrap: false,
-                primary: false,
-                crossAxisCount: 2,
-                childAspectRatio: 0.8,
-                crossAxisSpacing: 20,
-                mainAxisSpacing: 20,
-                children: streetFoodSingleList
-                    .map(
-                      (e) => GestureDetector(
-                        onTap: () {
-                          Navigator.of(context).pushReplacement(
-                            MaterialPageRoute(
-                              builder: (context) => DetailPage(
-                                image: e.image,
-                                name: e.name,
-                                price: e.price,
-                              ),
-                            ),
-                          );
-                        },
-                        child: Bottomcontainer(
-                          image: e.image,
-                          name: e.name,
-                          price: e.price,
+            height: 500,
+            child: ListView.separated(
+              itemCount: streetFoodSingleList.length,
+              itemBuilder: (context, index) {
+                final item = streetFoodSingleList[index];
+                return GestureDetector(
+                  onTap: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => DetailPage(
+                          image: item.image,
+                          name: item.name,
+                          price: item.price,
+                          describle: item.describle,
                         ),
                       ),
-                    )
-                    .toList()
-                // children: [
-                // bottomContainer(
-                //     image: 'images/trasua.jpg',
-                //     name: 'trà sữa trân châu đen',
-                //     price: 123),
-                // bottomContainer(
-                //     image: 'images/banhtrang.jpg',
-                //     name: 'bánh tráng trộn ab',
-                //     price: 123),
-                // bottomContainer(
-                //     image: 'images/trasua.jpg', name: 'trà sữa', price: 123),
-                // bottomContainer(
-                //     image: 'images/banhtrang.jpg',
-                //     name: 'bánh tráng',
-                //     price: 123),
-                // ],
-                ),
+                    );
+                  },
+                  child: Bottomcontainer(
+                    image: item.image,
+                    name: item.name,
+                    price: item.price,
+                    describle: item.describle,
+                  ),
+                );
+              },
+              separatorBuilder: (BuildContext context, int index) {
+                return Divider(
+                  color: Colors.grey,
+                  thickness: 1.0,
+                );
+              },
+             
+            ),
           ),
         ]),
       ),
