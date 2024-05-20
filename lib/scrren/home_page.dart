@@ -1,5 +1,6 @@
-import 'dart:io';
+import 'dart:async';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bai_1/modle/categories_modle.dart';
 import 'package:flutter_bai_1/modle/food_categories_modle.dart';
@@ -7,6 +8,7 @@ import 'package:flutter_bai_1/modle/food_single_modle.dart';
 import 'package:flutter_bai_1/provider/my_provider.dart';
 import 'package:flutter_bai_1/scrren/categories.dart';
 import 'package:flutter_bai_1/scrren/detail_page.dart';
+import 'package:flutter_bai_1/scrren/login_page.dart';
 import 'package:flutter_bai_1/scrren/widget/bottom_container.dart';
 import 'package:provider/provider.dart';
 
@@ -22,7 +24,20 @@ class HomePageState extends State<HomePage> {
   List<CategoriesModle> otherList = [];
   List<CategoriesModle> streetFoodList = [];
   List<SingleModle> streetFoodSingleList = [];
+  List<SingleModle> filterSearch = [];
   List<FoodCategoriesModle> foodCategories = [];
+  final searchQuery = new TextEditingController();
+  Timer? _debonce;
+  String searchText = "";
+  
+  Future<void> signOut() async {
+    await FirebaseAuth.instance.signOut();
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => LoginPage()),
+    );
+  }
+
   Widget categoriesContainer({
     required void Function() onTap,
     required String image,
@@ -57,8 +72,22 @@ class HomePageState extends State<HomePage> {
     );
   }
 
-  Widget drawerItem({required String name, required IconData icon}) {
+  Widget drawerItem({
+    required String name,
+    required IconData icon,
+    Future<void> Function()? onTap,
+  }) {
     return ListTile(
+      onTap: onTap != null
+          ? () async {
+              try {
+                await onTap();
+              } catch (error) {
+                // Handle error if needed
+                print('Error: $error');
+              }
+            }
+          : null,
       leading: Icon(
         icon,
         color: Colors.black,
@@ -140,10 +169,14 @@ class HomePageState extends State<HomePage> {
     //===================================Single =================================
     provider.getSingle();
     streetFoodSingleList = provider.throwStreetFoodSingleList;
+    // filterSearch = streetFoodSingleList;
+    // searchQuery.addListener(_onSearchChange);
+    filterSearch = searchText.isEmpty 
+        ? streetFoodSingleList 
+        : streetFoodSingleList.where((item) => item.name.toLowerCase().contains(searchText.toLowerCase())).toList();
     //===================================get list categories =====================
     provider.getFoodCategoriesList();
     foodCategories = provider.throwFoodCategoriesList;
-    streetFoodSingleList = provider.throwStreetFoodSingleList;
     return Scaffold(
       resizeToAvoidBottomInset: false,
       drawer: Drawer(
@@ -183,7 +216,8 @@ class HomePageState extends State<HomePage> {
                   ),
                 ),
                 drawerItem(name: "Change", icon: Icons.lock),
-                drawerItem(name: "Log out", icon: Icons.exit_to_app),
+                drawerItem(
+                    name: "Log out", icon: Icons.exit_to_app, onTap: signOut),
               ]),
         ),
       ),
@@ -203,7 +237,9 @@ class HomePageState extends State<HomePage> {
         child:
             Column(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
           TextField(
+            controller: searchQuery,
             decoration: InputDecoration(
+
               contentPadding: EdgeInsets.symmetric(vertical: 10),
               hintText: "Hãy tìm kiếm món bạn yêu thích nhé ",
               hintStyle: TextStyle(color: Colors.white),
@@ -214,7 +250,6 @@ class HomePageState extends State<HomePage> {
               filled: true,
               fillColor: Color.fromARGB(255, 232, 118, 118),
               border: OutlineInputBorder(
-                  
                   borderSide: BorderSide.none,
                   borderRadius: BorderRadius.circular(10)),
             ),
@@ -235,9 +270,9 @@ class HomePageState extends State<HomePage> {
           Container(
             height: 500,
             child: ListView.separated(
-              itemCount: streetFoodSingleList.length,
+              itemCount: filterSearch.length,
               itemBuilder: (context, index) {
-                final item = streetFoodSingleList[index];
+                final item = filterSearch[index];
                 return GestureDetector(
                   onTap: () {
                     Navigator.of(context).push(
@@ -265,11 +300,47 @@ class HomePageState extends State<HomePage> {
                   thickness: 1.0,
                 );
               },
-             
             ),
           ),
         ]),
       ),
     );
   }
+  _onSearchChange() {
+    if (_debonce?.isActive ?? false) _debonce?.cancel();
+    _debonce = Timer(
+      const Duration(milliseconds: 500),
+      () {
+        print(this.searchText);
+        print(searchQuery.text);
+        print(this.searchText != searchQuery.text);
+        if (this.searchText != searchQuery.text) {
+          print("vao ifff");
+          print(filterSearch);
+          this.filterSearch = this.streetFoodSingleList;
+          setState(() {
+            this.filterSearch = this
+                .filterSearch
+                .where(
+                  (item) => item.name
+                      .toLowerCase()
+                      .contains(searchQuery.text.toString().toLowerCase()),
+                )
+                .toList();
+          });
+          print("filterrr");
+          print(filterSearch.length);
+        }
+        this.searchText = searchQuery.text;
+      },
+    );
+  }
+  @override
+  void dispose(){
+    searchQuery.removeListener(_onSearchChange);
+    searchQuery.dispose();
+    _debonce?.cancel();
+    super.dispose();
+  }
 }
+

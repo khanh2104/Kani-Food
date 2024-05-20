@@ -22,21 +22,17 @@ class _LoginState extends State<LoginPage> {
 
   Future getData(context) async {
     try {
-      print('kiem tra user');
       userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
           email: email.text, password: password.text);
-      print(userCredential);
+          print("check userrrr ");
+          print(userCredential);
       if (userCredential != null) {
-        print("user khong null");
-        print(userCredential);
         Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => HomePage()),
         );
       }
     } catch (e) {
-      print('loi trong catch');
-      print(e);
       setState(() {
         loadding = false;
       });
