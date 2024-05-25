@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_bai_1/modle/categories_modle.dart';
 import 'package:flutter_bai_1/modle/food_categories_modle.dart';
 import 'package:flutter_bai_1/modle/food_single_modle.dart';
@@ -27,15 +28,23 @@ class HomePageState extends State<HomePage> {
   List<SingleModle> filterSearch = [];
   List<FoodCategoriesModle> foodCategories = [];
   final searchQuery = new TextEditingController();
-  Timer? _debonce;
-  String searchText = "";
-  
+  Timer? _debounce;
+  String searchText = "false";
+  int _cartItemCount = 2;
+
   Future<void> signOut() async {
     await FirebaseAuth.instance.signOut();
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => LoginPage()),
     );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    
+    searchQuery.addListener(_onSearchChange);
   }
 
   Widget categoriesContainer({
@@ -171,9 +180,12 @@ class HomePageState extends State<HomePage> {
     streetFoodSingleList = provider.throwStreetFoodSingleList;
     // filterSearch = streetFoodSingleList;
     // searchQuery.addListener(_onSearchChange);
-    filterSearch = searchText.isEmpty 
-        ? streetFoodSingleList 
-        : streetFoodSingleList.where((item) => item.name.toLowerCase().contains(searchText.toLowerCase())).toList();
+    // filterSearch = searchText.isEmpty
+    //     ? streetFoodSingleList
+    //     : streetFoodSingleList
+    //         .where((item) =>
+    //             item.name.toLowerCase().contains(searchText.toLowerCase()))
+    //         .toList();
     //===================================get list categories =====================
     provider.getFoodCategoriesList();
     foodCategories = provider.throwFoodCategoriesList;
@@ -224,22 +236,59 @@ class HomePageState extends State<HomePage> {
       appBar: AppBar(
         elevation: 0.0,
         actions: [
-          Padding(
-            padding: const EdgeInsets.all(9.0),
-            child: CircleAvatar(
-              backgroundImage: AssetImage('images/profile.jpg'),
-            ),
-          )
+          Row(
+            children: [
+              Stack(
+                children: <Widget>[
+                  IconButton(
+                    icon: Icon(
+                      Icons.shopping_cart,
+                      color: Colors.white,
+                    ),
+                    onPressed: () {
+                      // Bạn có thể thêm hành động khi nhấn vào biểu tượng giỏ hàng ở đây
+                      print('Cart icon pressed');
+                    },
+                  ),
+                  Positioned(
+                    right: 4,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.red,
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                      constraints: BoxConstraints(
+                        minWidth: 18,
+                        minHeight: 2,
+                      ),
+                      child: Text(
+                        '$_cartItemCount',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 12,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              Padding(
+                padding: const EdgeInsets.all(9.0),
+                child: CircleAvatar(
+                  backgroundImage: AssetImage('images/profile.jpg'),
+                ),
+              ),
+            ],
+          ),
         ],
       ),
       body: Container(
         margin: EdgeInsets.symmetric(horizontal: 10),
-        child:
-            Column(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
+        child: Column(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
           TextField(
             controller: searchQuery,
             decoration: InputDecoration(
-
               contentPadding: EdgeInsets.symmetric(vertical: 10),
               hintText: "Hãy tìm kiếm món bạn yêu thích nhé ",
               hintStyle: TextStyle(color: Colors.white),
@@ -269,6 +318,7 @@ class HomePageState extends State<HomePage> {
           // SizedBox(height: 20,),
           Container(
             height: 500,
+           
             child: ListView.separated(
               itemCount: filterSearch.length,
               itemBuilder: (context, index) {
@@ -306,41 +356,28 @@ class HomePageState extends State<HomePage> {
       ),
     );
   }
-  _onSearchChange() {
-    if (_debonce?.isActive ?? false) _debonce?.cancel();
-    _debonce = Timer(
-      const Duration(milliseconds: 500),
-      () {
-        print(this.searchText);
-        print(searchQuery.text);
-        print(this.searchText != searchQuery.text);
-        if (this.searchText != searchQuery.text) {
-          print("vao ifff");
-          print(filterSearch);
-          this.filterSearch = this.streetFoodSingleList;
-          setState(() {
-            this.filterSearch = this
-                .filterSearch
-                .where(
-                  (item) => item.name
-                      .toLowerCase()
-                      .contains(searchQuery.text.toString().toLowerCase()),
-                )
-                .toList();
-          });
-          print("filterrr");
-          print(filterSearch.length);
-        }
-        this.searchText = searchQuery.text;
-      },
-    );
-  }
+
   @override
-  void dispose(){
+  void dispose() {
     searchQuery.removeListener(_onSearchChange);
     searchQuery.dispose();
-    _debonce?.cancel();
+    _debounce?.cancel();
     super.dispose();
   }
-}
 
+  void _onSearchChange() {
+    if (_debounce?.isActive ?? false) _debounce?.cancel();
+    _debounce = Timer(const Duration(milliseconds: 500), () {
+      setState(() {
+        searchText = searchQuery.text;
+        filterSearch = searchText.isEmpty
+            ? streetFoodSingleList
+            : streetFoodSingleList
+                .where((item) =>
+                    item.name.toLowerCase().contains(searchText.toLowerCase()))
+                .toList();
+
+      });
+    });
+  }
+}
